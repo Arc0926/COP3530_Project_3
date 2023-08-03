@@ -1,0 +1,10 @@
+^C:\USERS\ARCAN\DOCUMENTS\REPOS\VIDEO_COMPRESSION\BUILD\CMAKEFILES\FF499A39A2D0AC9B575A71ECFD1D5496\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Arcan/Documents/Repos/video_compression/src -BC:/Users/Arcan/Documents/Repos/video_compression/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/Arcan/Documents/Repos/video_compression/build/opencvtest.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,9 @@
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/Experimental.dir
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/Nightly.dir
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/Continuous.dir
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/NightlyMemoryCheck.dir
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/opencvtest.dir
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/PACKAGE.dir
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/RUN_TESTS.dir
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Arcan/Documents/Repos/video_compression/build/CMakeFiles/ZERO_CHECK.dir

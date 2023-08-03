@@ -1,8 +1,12 @@
-#include "../src/main.cpp"
+//#include "../src/main.cpp"
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
+//#include "RLE.h"
+#include <vector>
 #include <sstream>
 #include <fstream>
+#include <opencv2/opencv.hpp>
+using namespace cv;
 using namespace std;
 
 /*
@@ -24,6 +28,41 @@ TEST_CASE("1: dummy test", "[dummy]") {
 	filesEqual(output, expectedOutput);
 }
 
+TEST_CASE("2: OpenCV", "[opencv]") {
+	std::string img = "../../test-io/input-files/doggy.jpg";
+    Mat srcImage = imread(img);
+    REQUIRE(srcImage.data);
+    imshow("srcImage", srcImage);
+    waitKey(0);
+}
+/*
+TEST_CASE("3: Run Length Encoding", "[compression]") {
+	// Define video dimensions and frame rate
+	const int width = 640;
+	const int height = 480;
+	const int frameRate = 30;
+
+	ifstream inputFile("3_input_video.raw", ios::binary);
+    REQUIRE(inputFile);
+
+    ofstream outputFile("3_compressed_video.bin", ios::binary);
+    REQUIRE(outputFile);
+
+    vector<char> frameData(width * height * 3); // Assuming 24-bit RGB frames
+
+    // Read frames from the input video file and compress them
+    while (inputFile.read(frameData.data(), frameData.size())) {
+        vector<char> compressedFrame = compressRLE(frameData);
+        int compressedSize = compressedFrame.size();
+        outputFile.write(reinterpret_cast<char*>(&compressedSize), sizeof(int));
+        outputFile.write(compressedFrame.data(), compressedSize);
+    }
+    inputFile.close();
+    outputFile.close();
+
+    cout << "Video compression completed.\n";
+}
+*/
 
 //a copy of main() in main.cpp to test for console outputs
 void test(istream& input, ostream& output) {

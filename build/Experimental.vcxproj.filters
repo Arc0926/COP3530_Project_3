@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Arcan\Documents\Repos\video_compression\build\CMakeFiles\ff499a39a2d0ac9b575a71ecfd1d5496\Experimental.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\Arcan\Documents\Repos\video_compression\src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Arcan\Documents\Repos\video_compression\build\CMakeFiles\Experimental" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{BF8A59B9-6B2E-3503-923B-F437A49768B2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
