@@ -42,8 +42,8 @@ TEST_CASE("2: OpenCV", "[opencv]") {
 TEST_CASE("4: MinHeap", "[compression]") {
 	ifstream input("../../test-io/input-files/4.txt");
 	ofstream out("../../test-io/output-files/4.txt");
-	//MinHeap minHeap(50);
-	/*
+	MinHeap minHeap(50);
+	
 	map<char, int> m;
 	string line;
 	while(getline(input, line))
@@ -79,7 +79,7 @@ TEST_CASE("4: MinHeap", "[compression]") {
 	ifstream output("../test-io/output-files/4.txt");
 	ifstream expectedOutput("../test-io/expected-output-files/4.txt");
 	filesEqual(output, expectedOutput);
-	*/
+
 }
 /*
 TEST_CASE("3: Run Length Encoding", "[compression]") {
@@ -117,9 +117,14 @@ void test(istream& input, ostream& output) {
 void filesEqual(ifstream& file1, ifstream& file2) {
 	string line1;
 	string line2;
-	while(getline(file1, line1) && getline(file2, line2)) {
+	//require either both files not be empty or both files be empty
+	REQUIRE(((file1.peek() != ifstream::traits_type::eof() && file2.peek() != std::ifstream::traits_type::eof())
+			|| (file1.peek() == ifstream::traits_type::eof() && file2.peek() != std::ifstream::traits_type::eof())));
+	while(getline(file1, line1) && getline(file2, line2)) 
+	{
 		REQUIRE(line1 == line2);
 	};
+	
 	file1.close();
 	file2.close();
 }
