@@ -141,7 +141,6 @@ void MinHeap::traverseHuffmanTree(MinHeapNode* root, string path, map<char, stri
 pair<map<char, string>, int> huffmanEncodeTextFile(string inputFileName, string outputFileName)
 {
     ifstream input(inputFileName);
-    cout << "compressing using huffman encoding" << endl;
     MinHeap minHeap(500);
 	
 	map<char, int> m;
@@ -186,8 +185,6 @@ void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char
     }
     ifstream input(inputFileName, ios::binary);
     ofstream output(outputFileName, ios::binary);
-    cout << "decompressing huffman encoded file" << endl;
-
 
     // Read binary data and convert huffman codes to ascii value of char
     string binaryString;
