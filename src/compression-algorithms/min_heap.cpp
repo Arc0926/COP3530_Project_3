@@ -30,8 +30,8 @@ MinHeapNode* MinHeap::newNode(char data, unsigned int freq)
     return temp;
 }
 
-void swapNodes(struct MinHeapNode* a,
-                     struct MinHeapNode* b)
+void MinHeap::swapNodes(MinHeapNode* a,
+                     MinHeapNode* b)
 {
  
     struct MinHeapNode* t = a;
