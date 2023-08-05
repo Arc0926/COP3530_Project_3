@@ -7,7 +7,7 @@
 #include <map>
 #include <sstream>
 #include <fstream>
-#include "../src/compression-algorithms/min_heap.h"
+#include "../src/compression-algorithms/HuffmanCoding.h""
 using namespace std;
 
 /*
