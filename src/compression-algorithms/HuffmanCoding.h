@@ -1,7 +1,6 @@
 #ifndef MIN_HEAP
 #define MIN_HEAP
 
-#include <string>
 //huffman tree node
 struct MinHeapNode
 {
@@ -28,10 +27,10 @@ public:
     MinHeapNode* extractMin();
     void insert(char c, unsigned int freq, MinHeapNode* left = nullptr, MinHeapNode* right = nullptr);
     void buildMinHeap();
-    bool isLeaf(MinHeapNode* root);
     unsigned int getSize();
     MinHeapNode** getArray();
     MinHeapNode* buildHuffmanTree();
+    void traverseHuffmanTree(MinHeapNode* root, string path, unordered_map<char, string>& codes);
 };
 
 #endif
