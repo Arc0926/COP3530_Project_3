@@ -34,7 +34,7 @@ int main() {
         std::cout << "Enter the width and height of the YUV file: ";
         std::cin >> width >> height;
 
-    //compress file using huffman encoding
+    cout << "compressing using huffman encoding" << endl;
     pair<map<char, string>, int> codesAndDummyBits = huffmanEncodeTextFile(inputFilePath, encodeOutputPath);
     map<char, string> codes = codesAndDummyBits.first;
     int dummyBits = codesAndDummyBits.second;
@@ -64,6 +64,7 @@ int main() {
     cout << "Huffman encoded file size is " << compressedFileSize << " bytes." << endl;
     cout << "File size reduced by " << 100 - (double)compressedFileSize/uncompressedFileSize*100 << "%" << endl;
 
+    cout << "decompressing huffman encoded file" << endl;
     huffmanDecodeTextFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
     if(filesEqual(inputFilePath, decodeOutputPath))
         cout << "File successfully decompressed." << endl;
