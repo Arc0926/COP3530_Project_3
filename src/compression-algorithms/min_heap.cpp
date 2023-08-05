@@ -2,9 +2,9 @@
 
 MinHeap::MinHeap(unsigned int capacity)
 {
-    //size = 0;
+    size = 0;
     this->capacity = capacity;
-    //array = new MinHeapNode*[capacity];
+    array = new MinHeapNode*[capacity];
 }
 
 MinHeap::MinHeap(char data[], unsigned int freq[], unsigned int size)
@@ -28,6 +28,15 @@ MinHeapNode* MinHeap::newNode(char data, unsigned int freq)
     temp->freq = freq;
 
     return temp;
+}
+
+void swapMinHeapNode(struct MinHeapNode* a,
+                     struct MinHeapNode* b)
+{
+ 
+    struct MinHeapNode* t = a;
+    *a = *b;
+    *b = *t;
 }
 
 void MinHeap::heapify(int index)
