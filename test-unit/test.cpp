@@ -39,9 +39,9 @@ TEST_CASE("2: OpenCV", "[opencv]") {
 }
 */
 
-TEST_CASE("4: MinHeap insert", "[compression]") {
-	ifstream input("../test-io/input-files/4.txt");
-	ofstream out("../test-io/output-files/4.txt");
+TEST_CASE("3: MinHeap insert", "[compression]") {
+	ifstream input("../test-io/input-files/3.txt");
+	ofstream out("../test-io/output-files/3.txt");
 	MinHeap minHeap(500);
 	
 	map<char, int> m;
@@ -76,8 +76,50 @@ TEST_CASE("4: MinHeap insert", "[compression]") {
 	ifstream output("../test-io/output-files/4.txt");
 	ifstream expectedOutput("../test-io/expected-output-files/4.txt");
 	filesEqual(output, expectedOutput);
-
 }
+
+TEST_CASE("4: MinHeap heapify", "[compression]") {
+	ifstream input("../test-io/input-files/4.txt");
+	ofstream out("../test-io/output-files/4.txt");
+	MinHeap minHeap(500);
+	
+	map<char, int> m;
+	string line;
+	while(getline(input, line))
+	{
+		for(auto& c : line)
+		{
+			// If the character is not already in the map, add it with a frequency of 1.
+			if (m.find(c) == m.end())
+			{
+				m.insert({c, 1});
+			}
+			// If the character is already in the map, increment its frequency.
+			else
+			{
+				m[c]++;
+			}
+		}
+	}
+	for(auto& pair : m)
+	{
+		minHeap.insert(pair.first, pair.second);
+	}
+	MinHeapNode** array = minHeap.getArray();
+	unsigned int size = minHeap.getSize();
+	for (int i = 0; i < size; i++)
+	{
+		MinHeapNode* min = minHeap.extractMin();
+		out << min->data << " : " << min->freq << endl;
+	}
+	
+	input.close();
+	out.close();
+	ifstream output("../test-io/output-files/4.txt");
+	ifstream expectedOutput("../test-io/expected-output-files/4.txt");
+	filesEqual(output, expectedOutput);
+}
+
 /*
 TEST_CASE("3: Run Length Encoding", "[compression]") {
 	// Define video dimensions and frame rate
