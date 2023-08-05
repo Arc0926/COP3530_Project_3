@@ -34,74 +34,41 @@ int main() {
         std::cout << "Enter the width and height of the YUV file: ";
         std::cin >> width >> height;
 
-        auto frames = readYUV420File(filename, width, height);
-        if (frames.empty()) {
-            std::cerr << "Failed to read YUV file\n";
-            return 1;
-        }
+    //compress file using huffman encoding
+    pair<map<char, string>, int> codesAndDummyBits = huffmanEncodeTextFile(inputFilePath, encodeOutputPath);
+    map<char, string> codes = codesAndDummyBits.first;
+    int dummyBits = codesAndDummyBits.second;
+    //get file sizes in bytes
+    ifstream uncompressedFile(inputFilePath);
+    if (!uncompressedFile.is_open()) 
+    {
+        cout << "Error opening file." << endl;
+        return 1;
+    }
+    uncompressedFile.seekg(0, ios::end);
+    streampos uncompressedFileSize = uncompressedFile.tellg();
+    uncompressedFile.seekg(0, ios::beg);
+    uncompressedFile.close();
 
-        // Ask user for compression type
-        std::cout << "Select compression type: \n";
-        std::cout << "1. Lossless\n";
-        std::cout << "2. Lossy\n";
-        int choice;
-        std::cin >> choice;
+    ifstream compressedFile(encodeOutputPath);
+    if (!compressedFile.is_open()) 
+    {
+        cout << "Error opening compressed file." << endl;
+        return 1;
+    }
+    compressedFile.seekg(0, ios::end);
+    streampos compressedFileSize = compressedFile.tellg();
+    compressedFile.seekg(0, ios::beg);
 
-        uint8_t quantizationLevel = 1;
-        if (choice == 2) {
-            std::cout << "Enter quantization level (2-256): ";
-            std::cin >> quantizationLevel;
-            if (quantizationLevel < 2 || quantizationLevel > 256) {
-                std::cerr << "Invalid quantization level. Defaulting to 16.\n";
-                quantizationLevel = 16;
-            }
-        }
+    cout << "Intput file size is " << uncompressedFileSize << " bytes." << endl;
+    cout << "Huffman encoded file size is " << compressedFileSize << " bytes." << endl;
+    cout << "File size reduced by " << 100 - (double)compressedFileSize/uncompressedFileSize*100 << "%" << endl;
 
-        pair<int, int> sizes = RLECompress(frames, quantizationLevel);
-
-        if (!RLEDecompress()) {
-            return 1;
-        }
-        PrintRLECompressionDifference(sizes.first, sizes.second);
-    } else if (choice == 2) {
-        cout << "Enter .txt file path:" << endl;
-//        string inputFilePath;
-//        cin >> inputFilePath;
-//
-//        //compress file using huffman encoding
-//        pair<map<char, string>, int> codesAndDummyBits = huffmanEncodeTextFile(inputFilePath, encodeOutputPath);
-//        map<char, string> codes = codesAndDummyBits.first;
-//        int dummyBits = codesAndDummyBits.second;
-//        //get file sizes in bytes
-//        ifstream uncompressedFile(inputFilePath);
-//        if (!uncompressedFile.is_open()) {
-//            cout << "Error opening file." << endl;
-//            return 1;
-//        }
-//        uncompressedFile.seekg(0, ios::end);
-//        streampos uncompressedFileSize = uncompressedFile.tellg();
-//        uncompressedFile.seekg(0, ios::beg);
-//        uncompressedFile.close();
-//
-//        ifstream compressedFile(encodeOutputPath);
-//        if (!compressedFile.is_open()) {
-//            cout << "Error opening compressed file." << endl;
-//            return 1;
-//        }
-//        compressedFile.seekg(0, ios::end);
-//        streampos compressedFileSize = compressedFile.tellg();
-//        compressedFile.seekg(0, ios::beg);
-//
-//        cout << "Intput file size is " << uncompressedFileSize << " bytes." << endl;
-//        cout << "Huffman encoded file size is " << compressedFileSize << " bytes." << endl;
-//        cout << "File size reduced by " << 100 - (double) compressedFileSize / uncompressedFileSize * 100 << "%" << endl;
-//
-//        huffmanDecodeTextFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
-//        if (filesEqual(inputFilePath, decodeOutputPath))
-//            cout << "File successfully decompressed." << endl;
-//        else
-//            cout << "File unsuccessfully decompressed" << endl;
-            }
+    huffmanDecodeTextFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
+    if(filesEqual(inputFilePath, decodeOutputPath))
+        cout << "File successfully decompressed." << endl;
+    else
+        cout << "File unsuccessfully decompressed" << endl;
 	return 0;
 }
 
