@@ -33,5 +33,8 @@ public:
     MinHeapNode* buildHuffmanTree();
     void traverseHuffmanTree(MinHeapNode* root, string path, map<char, string>& codes);
 };
-
+// Function to replace text with Huffman codes
+pair<map<char, string>, int> huffmanEncodeTextFile(string inputFileName, string outputFileName);
+void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char, string> huffmanCodes, int dummyBits);
+int replaceTextWithHuffmanCodes(string inputFilename, string outputFilename, map<char, string> huffmanCodes);
 #endif
