@@ -26,7 +26,7 @@ public:
     void swapNodes(MinHeapNode* a, MinHeapNode* b);
     void heapify(int index);
     MinHeapNode* extractMin();
-    void insert(MinHeapNode* root);
+    void insert(char c, unsigned int freq);
     void buildMinHeap();
     bool isLeaf(MinHeapNode* root);
     unsigned int getSize();

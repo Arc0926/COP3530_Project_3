@@ -21,7 +21,7 @@ MinHeap::MinHeap(char data[], unsigned int freq[], unsigned int size)
 
 MinHeapNode* MinHeap::newNode(char data, unsigned int freq)
 {
-    struct MinHeapNode* temp = new MinHeapNode;
+    MinHeapNode* temp = new MinHeapNode;
     temp->left = nullptr;
     temp->right = nullptr;
     temp->data = data;
@@ -68,10 +68,12 @@ MinHeapNode* MinHeap::extractMin()
     return temp;
 }
 
-void MinHeap::insert(MinHeapNode* node)
+void MinHeap::insert(char c, unsigned int freq)
 {
+    
     int index = size;
     size++;
+    MinHeapNode* node = newNode(c, freq);
     while (index && node->freq < array[(index-1)/2]->freq)
     {
         array[index] = array[(index-1)/2];
