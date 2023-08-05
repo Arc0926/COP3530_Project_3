@@ -1,5 +1,6 @@
 #ifndef MIN_HEAP
 #define MIN_HEAP
+using namespace std;
 
 //huffman tree node
 struct MinHeapNode
@@ -30,7 +31,7 @@ public:
     unsigned int getSize();
     MinHeapNode** getArray();
     MinHeapNode* buildHuffmanTree();
-    void traverseHuffmanTree(MinHeapNode* root, string path, unordered_map<char, string>& codes);
+    void traverseHuffmanTree(MinHeapNode* root, string path, map<char, string>& codes);
 };
 
 #endif

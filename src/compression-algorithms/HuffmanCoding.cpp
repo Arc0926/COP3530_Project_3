@@ -1,5 +1,5 @@
 #include <string>
-#include <unordered_map>
+#include <map>
 #include "HuffmanCoding.h"
 using namespace std;
 
@@ -119,19 +119,17 @@ MinHeapNode* MinHeap::buildHuffmanTree()
     return extractMin();
 }
 
-void MinHeap::traverseHuffmanTree(MinHeapNode* root, string path, unordered_map<char, string>& codes)
+void MinHeap::traverseHuffmanTree(MinHeapNode* root, string path, map<char, string>& codes)
 {
     if (root == nullptr)
         return;
     // If the node is a leaf, it contains a character
-    if (!(root->left) && !(root->right)) 
-    {
+    if (root->left == nullptr && root->right == nullptr) 
         codes[root->data] = path;
     // Traverse left and append '0' to the path
     traverseHuffmanTree(root->left, path + "0", codes);
 
     // Traverse right and append '1' to the path
     traverseHuffmanTree(root->right, path + "1", codes);
-    }
 }
 

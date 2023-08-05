@@ -7,7 +7,7 @@
 #include <map>
 #include <sstream>
 #include <fstream>
-#include "../src/compression-algorithms/HuffmanCoding.h""
+#include "../src/compression-algorithms/HuffmanCoding.h"
 using namespace std;
 
 /*
@@ -67,7 +67,8 @@ TEST_CASE("3: MinHeap insert", "[compression]") {
 		minHeap.insert(pair.first, pair.second);
 	}
 	MinHeapNode** array = minHeap.getArray();
-	for(unsigned int i = 0; i < minHeap.getSize(); i++)
+	unsigned int size = minHeap.getSize();
+	for(unsigned int i = 0; i < size; i++)
 	{
 		out << array[i]->data << " : " << array[i]->freq << endl;
 	}
@@ -120,6 +121,49 @@ TEST_CASE("4: MinHeap heapify", "[compression]") {
 	filesEqual(output, expectedOutput);
 }
 
+TEST_CASE("5: buildHuffmanTree and traverseHuffmanTree", "[compression]") {
+	ifstream input("../test-io/input-files/5.txt");
+	ofstream out("../test-io/output-files/5.txt");
+	MinHeap minHeap(500);
+	
+	map<char, int> m;
+	string line;
+	while(getline(input, line))
+	{
+		for(auto& c : line)
+		{
+			// If the character is not already in the map, add it with a frequency of 1.
+			if (m.find(c) == m.end())
+			{
+				m.insert({c, 1});
+			}
+			// If the character is already in the map, increment its frequency.
+			else
+			{
+				m[c]++;
+			}
+		}
+	}
+	for(auto& pair : m)
+	{
+		minHeap.insert(pair.first, pair.second);
+	}
+	MinHeapNode** array = minHeap.getArray();
+	MinHeapNode* root = minHeap.buildHuffmanTree();
+	map<char, string> codes;
+	minHeap.traverseHuffmanTree(root, "", codes);
+	for (auto& pair : codes)
+	{
+		out << pair.first << " : " << pair.second << endl;
+	}
+
+	input.close();
+	out.close();
+	ifstream output("../test-io/output-files/5.txt");
+	ifstream expectedOutput("../test-io/expected-output-files/5.txt");
+	filesEqual(output, expectedOutput);
+	
+}
 /*
 TEST_CASE("3: Run Length Encoding", "[compression]") {
 	// Define video dimensions and frame rate
