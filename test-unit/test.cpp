@@ -74,8 +74,8 @@ TEST_CASE("3: MinHeap insert", "[compression]") {
 	}
 	input.close();
 	out.close();
-	ifstream output("../test-io/output-files/4.txt");
-	ifstream expectedOutput("../test-io/expected-output-files/4.txt");
+	ifstream output("../test-io/output-files/3.txt");
+	ifstream expectedOutput("../test-io/expected-output-files/3.txt");
 	filesEqual(output, expectedOutput);
 }
 
@@ -148,7 +148,6 @@ TEST_CASE("5: buildHuffmanTree and traverseHuffmanTree", "[compression]") {
 	{
 		minHeap.insert(pair.first, pair.second);
 	}
-	MinHeapNode** array = minHeap.getArray();
 	MinHeapNode* root = minHeap.buildHuffmanTree();
 	map<char, string> codes;
 	minHeap.traverseHuffmanTree(root, "", codes);
