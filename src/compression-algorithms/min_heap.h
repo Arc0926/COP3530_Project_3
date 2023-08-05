@@ -23,7 +23,7 @@ public:
     
     MinHeap(char data[], unsigned int freq[], unsigned int size);
     MinHeapNode* newNode(char data, unsigned int freq);
-    void swapNodes(MinHeapNode* a, MinHeapNode* b);
+    void swapNodes(MinHeapNode* &a, MinHeapNode* &b);
     void heapify(int index);
     MinHeapNode* extractMin();
     void insert(char c, unsigned int freq);
