@@ -49,12 +49,12 @@ void MinHeap::heapify(int index)
     int left = 2 * index + 1;
     int right = 2 * index + 2;
 
-    //if left child is smaller, set smallest to left index
+    // If left child is smaller, set smallest to left index
     if (left < size
         && array[left]->freq < array[smallest]->freq)
         smallest = left;
 
-    //if right child is smaller, set smallest to right index
+    // If right child is smaller, set smallest to right index
     if (right < size
         && array[right]->freq < array[smallest]->freq)
         smallest = right;
