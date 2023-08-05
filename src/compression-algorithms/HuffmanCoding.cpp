@@ -124,7 +124,8 @@ void MinHeap::traverseHuffmanTree(MinHeapNode* root, string path, unordered_map<
     if (root == nullptr)
         return;
     // If the node is a leaf, it contains a character
-    if (!(root->left) && !(root->right)) {
+    if (!(root->left) && !(root->right)) 
+    {
         codes[root->data] = path;
     // Traverse left and append '0' to the path
     traverseHuffmanTree(root->left, path + "0", codes);
