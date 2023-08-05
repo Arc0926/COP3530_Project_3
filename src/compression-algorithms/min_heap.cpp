@@ -19,11 +19,11 @@ MinHeap::MinHeap(char data[], unsigned int freq[], unsigned int size)
     buildMinHeap();
 }
 
-MinHeapNode* MinHeap::newNode(char data, unsigned int freq)
+MinHeapNode* MinHeap::newNode(char data, unsigned int freq, MinHeapNode* left, MinHeapNode* right)
 {
     MinHeapNode* temp = new MinHeapNode;
-    temp->left = nullptr;
-    temp->right = nullptr;
+    temp->left = left;
+    temp->right = right;
     temp->data = data;
     temp->freq = freq;
 
@@ -68,12 +68,12 @@ MinHeapNode* MinHeap::extractMin()
     return temp;
 }
 
-void MinHeap::insert(char c, unsigned int freq)
+void MinHeap::insert(char c, unsigned int freq, MinHeapNode* left, MinHeapNode* right)
 {
     
     int index = size;
     size++;
-    MinHeapNode* node = newNode(c, freq);
+    MinHeapNode* node = newNode(c, freq, left, right);
     while (index && node->freq < array[(index-1)/2]->freq)
     {
         array[index] = array[(index-1)/2];
@@ -105,5 +105,17 @@ unsigned int MinHeap::getSize()
 MinHeapNode** MinHeap::getArray()
 {
     return array;
+}
+
+MinHeapNode* MinHeap::buildHuffmanTree() {
+    MinHeapNode* left;
+    MinHeapNode* right;
+    while(size > 1) {
+        left = extractMin();
+        right = extractMin();
+        insert('!', left->freq + right->freq, left, right);
+    }
+
+    return extractMin();
 }
 
