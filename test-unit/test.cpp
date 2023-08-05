@@ -39,10 +39,10 @@ TEST_CASE("2: OpenCV", "[opencv]") {
 }
 */
 
-TEST_CASE("4: MinHeap", "[compression]") {
-	ifstream input("../../test-io/input-files/4.txt");
-	ofstream out("../../test-io/output-files/4.txt");
-	MinHeap minHeap(50);
+TEST_CASE("4: MinHeap insert", "[compression]") {
+	ifstream input("../test-io/input-files/4.txt");
+	ofstream out("../test-io/output-files/4.txt");
+	MinHeap minHeap(500);
 	
 	map<char, int> m;
 	string line;
@@ -64,15 +64,12 @@ TEST_CASE("4: MinHeap", "[compression]") {
 	}
 	for(auto& pair : m)
 	{
-		MinHeapNode node;
-		node.data = pair.first;
-		node.freq = pair.second;
-		minHeap.insert(&node);
+		minHeap.insert(pair.first, pair.second);
 	}
 	MinHeapNode** array = minHeap.getArray();
 	for(unsigned int i = 0; i < minHeap.getSize(); i++)
 	{
-		out << array[i]->data << ":" << array[i]->freq << endl;
+		out << array[i]->data << " : " << array[i]->freq << endl;
 	}
 	input.close();
 	out.close();
@@ -119,7 +116,7 @@ void filesEqual(ifstream& file1, ifstream& file2) {
 	string line2;
 	//require either both files not be empty or both files be empty
 	REQUIRE(((file1.peek() != ifstream::traits_type::eof() && file2.peek() != std::ifstream::traits_type::eof())
-			|| (file1.peek() == ifstream::traits_type::eof() && file2.peek() != std::ifstream::traits_type::eof())));
+			|| (file1.peek() == ifstream::traits_type::eof() && file2.peek() == std::ifstream::traits_type::eof())));
 	while(getline(file1, line1) && getline(file2, line2)) 
 	{
 		REQUIRE(line1 == line2);
