@@ -1,4 +1,4 @@
-#include "min_heap.h"
+#include "HuffmanCoding.h"
 
 MinHeap::MinHeap(unsigned int capacity)
 {
