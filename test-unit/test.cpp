@@ -1,12 +1,13 @@
-//#include "../src/main.cpp"
+#include "../src/main.cpp"
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 //#include "RLE.h"
+
 #include <vector>
+#include <map>
 #include <sstream>
 #include <fstream>
-#include <opencv2/opencv.hpp>
-using namespace cv;
+#include "../src/compression-algorithms/min_heap.h"
 using namespace std;
 
 /*
@@ -28,12 +29,57 @@ TEST_CASE("1: dummy test", "[dummy]") {
 	filesEqual(output, expectedOutput);
 }
 
+/*
 TEST_CASE("2: OpenCV", "[opencv]") {
 	std::string img = "../../test-io/input-files/doggy.jpg";
     Mat srcImage = imread(img);
     REQUIRE(srcImage.data);
     imshow("srcImage", srcImage);
     waitKey(0);
+}
+*/
+
+TEST_CASE("4: MinHeap", "[compression]") {
+	ifstream input("../../test-io/input-files/4.txt");
+	ofstream out("../../test-io/output-files/4.txt");
+	//MinHeap minHeap(50);
+	/*
+	map<char, int> m;
+	string line;
+	while(getline(input, line))
+	{
+		for(auto& c : line)
+		{
+			// If the character is not already in the map, add it with a frequency of 1.
+			if (m.find(c) == m.end())
+			{
+				m.insert({c, 1});
+			}
+			// If the character is already in the map, increment its frequency.
+			else
+			{
+				m[c]++;
+			}
+		}
+	}
+	for(auto& pair : m)
+	{
+		MinHeapNode node;
+		node.data = pair.first;
+		node.freq = pair.second;
+		minHeap.insert(&node);
+	}
+	MinHeapNode** array = minHeap.getArray();
+	for(unsigned int i = 0; i < minHeap.getSize(); i++)
+	{
+		out << array[i]->data << ":" << array[i]->freq << endl;
+	}
+	input.close();
+	out.close();
+	ifstream output("../test-io/output-files/4.txt");
+	ifstream expectedOutput("../test-io/expected-output-files/4.txt");
+	filesEqual(output, expectedOutput);
+	*/
 }
 /*
 TEST_CASE("3: Run Length Encoding", "[compression]") {
