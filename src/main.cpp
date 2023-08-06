@@ -18,8 +18,8 @@ void PrintRLECompressionDifference(int start, int final);
 
 bool filesEqual(string filePath1, string filePath2);
 
-const string encodeOutputPath = "../test-io/output-files/main-encoded.txt";
-const string decodeOutputPath = "../test-io/output-files/main-decoded.txt";
+const string encodeOutputPath = "../test-io/output-files/main-encoded.YUV";
+const string decodeOutputPath = "../test-io/output-files/main-decoded.YUV";
 int main() {
     int choice;
     cout << "Enter 1 for RLE and 2 for Huffman" << endl;
@@ -28,7 +28,7 @@ int main() {
         std::string filename;
         std::cout << "Enter the YUV file name: ";
         std::cin >> filename;
-        filename = "main-io/test_videos/" + filename;
+        filename = "../main-io/test_videos/" + filename;
 
         int width, height;
         std::cout << "Enter the width and height of the YUV file: ";
@@ -68,7 +68,7 @@ int main() {
         string inputFilePath;
         cout << "Enter the YUV file name: ";
         cin >> inputFilePath;
-        inputFilePath = "main-io/test_videos/" + inputFilePath;
+        inputFilePath = "../main-io/test_videos/" + inputFilePath;
 
         int width, height;
         cout << "Enter the width and height of the YUV file: ";
@@ -104,11 +104,11 @@ int main() {
         cout << "File size reduced by " << 100 - (double) compressedFileSize / uncompressedFileSize * 100 << "%" << endl;
 
         
-        // huffmanDecodeTextFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
-        // if (filesEqual(inputFilePath, decodeOutputPath))
-        //     cout << "File successfully decompressed." << endl;
-        // else
-        //     cout << "File unsuccessfully decompressed" << endl;
+        huffmanDecodeYUVFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
+        if (filesEqual(inputFilePath, decodeOutputPath))
+            cout << "File successfully decompressed." << endl;
+        else
+            cout << "File unsuccessfully decompressed" << endl;
     }
 	return 0;
 }
@@ -199,7 +199,7 @@ vector<vector<uint8_t>> readYUV420File(const string& filename, int width, int he
 pair <int, int> RLECompress(const std::vector<std::vector<uint8_t>>& frames, uint8_t quantizationLevel) {
     std::cout << "Size of the input YUV file: " << (frames.size() * frames[0].size()) << " bytes\n";
 
-    std::ofstream outFile("main-io/compressed_rle.rle", std::ios::binary);
+    std::ofstream outFile("../main-io/compressed_rle.rle", std::ios::binary);
     if (!outFile) {
         std::cerr << "Failed to open output file\n";
         return make_pair(0,0);
@@ -223,8 +223,8 @@ pair <int, int> RLECompress(const std::vector<std::vector<uint8_t>>& frames, uin
 
 bool RLEDecompress() {
     // Decode the compressed frames
-    std::ifstream inCompressedFile("main-io/compressed_rle.rle", std::ios::binary);
-    std::ofstream outDecodedFile("main-io/decoded.yuv", std::ios::binary);
+    std::ifstream inCompressedFile("../main-io/compressed_rle.rle", std::ios::binary);
+    std::ofstream outDecodedFile("../main-io/decoded.yuv", std::ios::binary);
 
     uint32_t size;
     while (inCompressedFile.read(reinterpret_cast<char *>(&size), sizeof(size))) {

@@ -256,6 +256,42 @@ void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char
     output.close();
 }
 
+void huffmanDecodeYUVFile(string inputFileName, string outputFileName, map<char, string> huffmanCodes, int dummyBits)
+{
+    //reverse the keys and values for the huffmanCodes
+    map<string, char> reversedCodes;
+    for (auto& pair : huffmanCodes)
+    {
+        reversedCodes.insert({pair.second, pair.first});
+    }
+    ifstream input(inputFileName, ios::binary);
+    ofstream output(outputFileName, ios::binary);
+
+    // Read binary data and convert huffman codes to ascii value of char
+    string binaryString;
+    string test;
+    char byte;
+    int end = 0;
+    while (input.get(byte)) {
+        if (input.peek() == EOF) 
+        {
+            end = dummyBits;
+        } 
+        for (int bit = 7; bit >= end; --bit) {
+            binaryString += ((byte >> bit) & 1) ? '1' : '0';
+            if (reversedCodes.find(binaryString) != reversedCodes.end())
+            {   
+                output.write(&reversedCodes[binaryString], 1);
+                test += reversedCodes[binaryString];
+                binaryString = "";
+            }
+        }
+    }
+    input.close();
+    output.close();
+}
+
+
 int replaceTextWithHuffmanCodes(string inputFileName, string outputFileName, map<char, string> huffmanCodes) 
 {
     ifstream input(inputFileName, ios::binary);

@@ -79,6 +79,10 @@ pair<map<char, string>, int> huffmanEncodeYUVFile(const string& inputFileName, s
 // Input: input file path, output file path, huffman code map, number of bits to disregard at the end
 void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char, string> huffmanCodes, int dummyBits);
 
+// Function to replace huffman-encoded data with YUV data
+// Input: input file path, output file path, huffman code map, number of bits to disregard at the end
+void huffmanDecodeYUVFile(string inputFileName, string outputFileName, map<char, string> huffmanCodes, int dummyBits);
+
 // Replaces txt data with huffman encoded data
 // Input: input file path, output file path, huffman code map
 // Output: how many bits at the end of the encode file should be disregarded
