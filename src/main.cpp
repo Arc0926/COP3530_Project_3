@@ -64,44 +64,52 @@ int main() {
         }
         PrintRLECompressionDifference(sizes.first, sizes.second);
     } else if (choice == 2) {
-        cout << "Enter .txt file path:" << endl;
-//        string inputFilePath;
-//        cin >> inputFilePath;
-//
-//        //compress file using huffman encoding
-//        pair<map<char, string>, int> codesAndDummyBits = huffmanEncodeTextFile(inputFilePath, encodeOutputPath);
-//        map<char, string> codes = codesAndDummyBits.first;
-//        int dummyBits = codesAndDummyBits.second;
-//        //get file sizes in bytes
-//        ifstream uncompressedFile(inputFilePath);
-//        if (!uncompressedFile.is_open()) {
-//            cout << "Error opening file." << endl;
-//            return 1;
-//        }
-//        uncompressedFile.seekg(0, ios::end);
-//        streampos uncompressedFileSize = uncompressedFile.tellg();
-//        uncompressedFile.seekg(0, ios::beg);
-//        uncompressedFile.close();
-//
-//        ifstream compressedFile(encodeOutputPath);
-//        if (!compressedFile.is_open()) {
-//            cout << "Error opening compressed file." << endl;
-//            return 1;
-//        }
-//        compressedFile.seekg(0, ios::end);
-//        streampos compressedFileSize = compressedFile.tellg();
-//        compressedFile.seekg(0, ios::beg);
-//
-//        cout << "Intput file size is " << uncompressedFileSize << " bytes." << endl;
-//        cout << "Huffman encoded file size is " << compressedFileSize << " bytes." << endl;
-//        cout << "File size reduced by " << 100 - (double) compressedFileSize / uncompressedFileSize * 100 << "%" << endl;
-//
-//        huffmanDecodeTextFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
-//        if (filesEqual(inputFilePath, decodeOutputPath))
-//            cout << "File successfully decompressed." << endl;
-//        else
-//            cout << "File unsuccessfully decompressed" << endl;
-            }
+
+        string inputFilePath;
+        cout << "Enter the YUV file name: ";
+        cin >> inputFilePath;
+        inputFilePath = "main-io/test_videos/" + inputFilePath;
+
+        int width, height;
+        cout << "Enter the width and height of the YUV file: ";
+        cin >> width >> height;
+
+
+        //compress file using huffman encoding
+        pair<map<char, string>, int> codesAndDummyBits = huffmanEncodeYUVFile(inputFilePath, encodeOutputPath);
+        map<char, string> codes = codesAndDummyBits.first;
+        int dummyBits = codesAndDummyBits.second;
+        //get file sizes in bytes
+        ifstream uncompressedFile(inputFilePath);
+        if (!uncompressedFile.is_open()) {
+            cout << "Error opening file." << endl;
+            return 1;
+        }
+        uncompressedFile.seekg(0, ios::end);
+        streampos uncompressedFileSize = uncompressedFile.tellg();
+        uncompressedFile.seekg(0, ios::beg);
+        uncompressedFile.close();
+
+        ifstream compressedFile(encodeOutputPath);
+        if (!compressedFile.is_open()) {
+            cout << "Error opening compressed file." << endl;
+            return 1;
+        }
+        compressedFile.seekg(0, ios::end);
+        streampos compressedFileSize = compressedFile.tellg();
+        compressedFile.seekg(0, ios::beg);
+
+        cout << "Intput file size is " << uncompressedFileSize << " bytes." << endl;
+        cout << "Huffman encoded file size is " << compressedFileSize << " bytes." << endl;
+        cout << "File size reduced by " << 100 - (double) compressedFileSize / uncompressedFileSize * 100 << "%" << endl;
+
+        
+        // huffmanDecodeTextFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
+        // if (filesEqual(inputFilePath, decodeOutputPath))
+        //     cout << "File successfully decompressed." << endl;
+        // else
+        //     cout << "File unsuccessfully decompressed" << endl;
+    }
 	return 0;
 }
 
@@ -242,4 +250,24 @@ void PrintRLECompressionDifference (int start, int final) {
     } else {
         cout << "file size increased by " << (final - start)*100 / start << "%" << endl;
     }
+}
+
+bool filesEqual(string filePath1, string filePath2) {
+    ifstream file1(filePath1);
+    ifstream file2(filePath2);
+	string line1;
+	string line2;
+	//require either both files not be empty or both files be empty
+	if(((file1.peek() == ifstream::traits_type::eof() && file2.peek() != std::ifstream::traits_type::eof())
+		|| (file1.peek() != ifstream::traits_type::eof() && file2.peek() == std::ifstream::traits_type::eof())))
+            return false;
+	while(getline(file1, line1) && getline(file2, line2)) 
+	{
+		if (line1 != line2)
+            return false;
+	};
+	
+	file1.close();
+	file2.close();
+    return true;
 }

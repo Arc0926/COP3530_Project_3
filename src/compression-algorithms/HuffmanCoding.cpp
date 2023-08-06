@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <map>
 #include <fstream>
-#include <filesystem>
 #include "HuffmanCoding.h"
 using namespace std;
 
@@ -181,6 +181,46 @@ pair<map<char, string>, int> huffmanEncodeTextFile(string inputFileName, string 
     return {codes, dummyBits};
 }
 
+pair<map<char, string>, int> huffmanEncodeYUVFile(const string& inputFileName, string outputFileName)
+{
+
+    ifstream input(inputFileName, ios::binary);
+    if (!input) {
+        cerr << "Failed to open file\n";
+        return {};
+    }
+
+    // Read YUV frame bytes one by one
+    char byte;
+    ofstream output(outputFileName, ios:: binary);
+    map<char, int> m;
+    MinHeap minHeap(5000);
+    while(input.get(byte))
+    {
+        // If the character is not already in the map, add it with a frequency of 1.
+        if (m.find(byte) == m.end())
+        {
+            m.insert({byte, 1});
+        }
+        // If the character is already in the map, increment its frequency.
+        else
+        {
+            m[byte]++;
+        }
+    }
+    input.close();
+    for(auto& pair : m)
+    {
+        minHeap.insert(pair.first, pair.second);
+    }
+    MinHeapNode* root = minHeap.buildHuffmanTree();
+    map<char, string> codes;
+    minHeap.traverseHuffmanTree(root, "", codes);
+    int dummyBits = replaceYUVWithHuffmanCodes(inputFileName, outputFileName, codes);
+    
+    return {codes, dummyBits};
+}
+
 void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char, string> huffmanCodes, int dummyBits)
 {
     //reverse the keys and values for the huffmanCodes
@@ -216,23 +256,21 @@ void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char
     output.close();
 }
 
-int replaceTextWithHuffmanCodes(string inputFileName, string outputFileName, map<char, string> huffmanCodes) {
-    ifstream input(inputFileName);
+int replaceTextWithHuffmanCodes(string inputFileName, string outputFileName, map<char, string> huffmanCodes) 
+{
+    ifstream input(inputFileName, ios::binary);
     ofstream output(outputFileName, ios::binary);
 
     char bitBuffer = 0; // Buffer to accumulate bits
     int bitCount = 0;   // Count of bits in the buffer
 
     char c;
-    string test;
-    while (input.get(c)) {
-        test += c;
-        // if (c == '\n') {
-        //     continue;
-        // }
+    while (input.get(c)) 
+    {
         const string& huffmanCode = huffmanCodes.at(c);
 
-        for (char codeBit : huffmanCode) {
+        for (char codeBit : huffmanCode) 
+        {
             bitBuffer <<= 1; // Shift the buffer to the left
             bitBuffer |= (codeBit - '0'); // Set the least significant bit
 
@@ -256,24 +294,39 @@ int replaceTextWithHuffmanCodes(string inputFileName, string outputFileName, map
     return 8 - bitCount;
 }
 
-bool filesEqual(string filePath1, string filePath2) {
-    ifstream file1(filePath1);
-    ifstream file2(filePath2);
-	string line1;
-	string line2;
-	//require either both files not be empty or both files be empty
-	if(((file1.peek() == ifstream::traits_type::eof() && file2.peek() != std::ifstream::traits_type::eof())
-		|| (file1.peek() != ifstream::traits_type::eof() && file2.peek() == std::ifstream::traits_type::eof())))
-            return false;
-	while(getline(file1, line1) && getline(file2, line2)) 
-	{
-		if (line1 != line2)
-            return false;
-	};
-	
-	file1.close();
-	file2.close();
-    return true;
+int replaceYUVWithHuffmanCodes(string inputFileName, string outputFileName, map<char, string> huffmanCodes)
+{
+    ifstream input(inputFileName, ios::binary);
+    ofstream output(outputFileName, ios::binary);
+
+    char bitBuffer = 0; // Buffer to accumulate bits
+    int bitCount = 0; // Count of bits in the buffer
+
+    char byte;
+    while (input.get(byte))
+    {
+        const string& huffmanCode = huffmanCodes.at(byte);
+
+        for (char codeBit : huffmanCode)
+        {
+            bitBuffer <<= 1; // Shift the buffer to the left
+            bitBuffer |= (codeBit - '0'); //Set the least significant bit
+
+            ++bitCount;
+            if (bitCount == 8) {
+                output.write(&bitBuffer, 1);
+                bitBuffer = 0;
+                bitCount = 0;
+            }
+        }
+    }
+
+    if(bitCount > 0)
+    {
+        bitBuffer <<= (8 - bitCount);
+        output.write(&bitBuffer, 1);
+    }
+    return 8 - bitCount;
 }
 
 

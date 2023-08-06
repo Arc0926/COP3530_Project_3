@@ -70,6 +70,11 @@ public:
 // Output: pair containing a map of the binary codes and how many bits at the end of the encode file should be disregarded
 pair<map<char, string>, int> huffmanEncodeTextFile(string inputFileName, string outputFileName);
 
+// Creates huffman tree and encodes YUV file
+// Input: input file path, output file path
+// Output: pair containing a map of the binary codes and how many bits at the end of the encode file should be disregarded
+pair<map<char, string>, int> huffmanEncodeYUVFile(const string& inputFileName, string outputFileName);
+
 // Function to replace huffman-encoded data with text data
 // Input: input file path, output file path, huffman code map, number of bits to disregard at the end
 void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char, string> huffmanCodes, int dummyBits);
@@ -78,4 +83,9 @@ void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char
 // Input: input file path, output file path, huffman code map
 // Output: how many bits at the end of the encode file should be disregarded
 int replaceTextWithHuffmanCodes(string inputFilename, string outputFilename, map<char, string> huffmanCodes);
+
+// Replaces YUV data with huffman encoded data
+// Input: input file path, output file path, huffman code map
+// Output: how many bits at the end of the encode file should be disregarded
+int replaceYUVWithHuffmanCodes(string inputFilename, string outputFilename, map<char, string> huffmanCodes);
 #endif
