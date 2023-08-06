@@ -2,178 +2,254 @@
 #include <string>
 #include <map>
 #include <fstream>
-#include <filesystem>
+#include <vector>
+#include <limits>
 #include "compression-algorithms/HuffmanCoding.h"
 using namespace std;
 
-// Function to replace text with Huffman codes
-pair<map<char, string>, int> huffmanEncodeTextFile(string inputFileName, string outputFileName);
-void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char, string> huffmanCodes, int dummyBits);
-int replaceTextWithHuffmanCodes(string inputFilename, string outputFilename, map<char, string> huffmanCodes);
+uint8_t Quantize(uint8_t value, uint8_t quantizationLevel);
+vector<uint8_t> RLEDecode(const vector<uint8_t>& data);
+vector<uint8_t> RLEEncode(const vector<uint8_t>& data, uint8_t quantizationLevel);
+vector<vector<uint8_t>> readYUV420File(const string& filename, int width, int height);
+
+pair<int, int> RLECompress(const std::vector<std::vector<uint8_t>>& frames, uint8_t quantizationLevel);
+bool RLEDecompress();
+void PrintRLECompressionDifference(int start, int final);
+
 bool filesEqual(string filePath1, string filePath2);
 
-const string encodeOutputPath = "../test-io/output-files/main-encoded.txt";
-const string decodeOutputPath = "../test-io/output-files/main-decoded.txt";
+const string encodeOutputPath = "../test-io/output-files/main-encoded.YUV";
+const string decodeOutputPath = "../test-io/output-files/main-decoded.YUV";
 int main() {
-    cout << "Enter .txt file path:" << endl;
-    string inputFilePath;
-    cin >> inputFilePath;
+    int choice;
+    cout << "Enter 1 for RLE and 2 for Huffman" << endl;
+    cin >> choice;
+    if (choice == 1) {
+        std::string filename;
+        std::cout << "Enter the YUV file name: ";
+        std::cin >> filename;
+        filename = "../main-io/test_videos/" + filename;
 
-    //compress file using huffman encoding
-    pair<map<char, string>, int> codesAndDummyBits = huffmanEncodeTextFile(inputFilePath, encodeOutputPath);
-    map<char, string> codes = codesAndDummyBits.first;
-    int dummyBits = codesAndDummyBits.second;
-    //get file sizes in bytes
-    ifstream uncompressedFile(inputFilePath);
-    if (!uncompressedFile.is_open()) 
-    {
-        cout << "Error opening file." << endl;
-        return 1;
+        int width, height;
+        std::cout << "Enter the width and height of the YUV file: ";
+        std::cin >> width >> height;
+
+        auto frames = readYUV420File(filename, width, height);
+        if (frames.empty()) {
+            std::cerr << "Failed to read YUV file\n";
+            return 1;
+        }
+
+        // Ask user for compression type
+        std::cout << "Select compression type: \n";
+        std::cout << "1. Lossless\n";
+        std::cout << "2. Lossy\n";
+        int choice;
+        std::cin >> choice;
+
+        uint8_t quantizationLevel = 1;
+        if (choice == 2) {
+            std::cout << "Enter quantization level (2-256): ";
+            std::cin >> quantizationLevel;
+            if (quantizationLevel < 2 || quantizationLevel > 256) {
+                std::cerr << "Invalid quantization level. Defaulting to 16.\n";
+                quantizationLevel = 16;
+            }
+        }
+
+        pair<int, int> sizes = RLECompress(frames, quantizationLevel);
+
+        if (!RLEDecompress()) {
+            return 1;
+        }
+        PrintRLECompressionDifference(sizes.first, sizes.second);
+    } else if (choice == 2) {
+
+        string inputFilePath;
+        cout << "Enter the YUV file name: ";
+        cin >> inputFilePath;
+        inputFilePath = "../main-io/test_videos/" + inputFilePath;
+
+        int width, height;
+        cout << "Enter the width and height of the YUV file: ";
+        cin >> width >> height;
+
+
+        //compress file using huffman encoding
+        pair<map<char, string>, int> codesAndDummyBits = huffmanEncodeYUVFile(inputFilePath, encodeOutputPath);
+        map<char, string> codes = codesAndDummyBits.first;
+        int dummyBits = codesAndDummyBits.second;
+        //get file sizes in bytes
+        ifstream uncompressedFile(inputFilePath);
+        if (!uncompressedFile.is_open()) {
+            cout << "Error opening file." << endl;
+            return 1;
+        }
+        uncompressedFile.seekg(0, ios::end);
+        streampos uncompressedFileSize = uncompressedFile.tellg();
+        uncompressedFile.seekg(0, ios::beg);
+        uncompressedFile.close();
+
+        ifstream compressedFile(encodeOutputPath);
+        if (!compressedFile.is_open()) {
+            cout << "Error opening compressed file." << endl;
+            return 1;
+        }
+        compressedFile.seekg(0, ios::end);
+        streampos compressedFileSize = compressedFile.tellg();
+        compressedFile.seekg(0, ios::beg);
+
+        cout << "Intput file size is " << uncompressedFileSize << " bytes." << endl;
+        cout << "Huffman encoded file size is " << compressedFileSize << " bytes." << endl;
+        cout << "File size reduced by " << 100 - (double) compressedFileSize / uncompressedFileSize * 100 << "%" << endl;
+
+        
+        huffmanDecodeYUVFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
+        if (filesEqual(inputFilePath, decodeOutputPath))
+            cout << "File successfully decompressed." << endl;
+        else
+            cout << "File unsuccessfully decompressed" << endl;
     }
-    uncompressedFile.seekg(0, ios::end);
-    streampos uncompressedFileSize = uncompressedFile.tellg();
-    uncompressedFile.seekg(0, ios::beg);
-    uncompressedFile.close();
-
-    ifstream compressedFile(encodeOutputPath);
-    if (!compressedFile.is_open()) 
-    {
-        cout << "Error opening compressed file." << endl;
-        return 1;
-    }
-    compressedFile.seekg(0, ios::end);
-    streampos compressedFileSize = compressedFile.tellg();
-    compressedFile.seekg(0, ios::beg);
-
-    cout << "Intput file size is " << uncompressedFileSize << " bytes." << endl;
-    cout << "Huffman encoded file size is " << compressedFileSize << " bytes." << endl;
-    cout << "File size reduced by " << 100 - (double)compressedFileSize/uncompressedFileSize*100 << "%" << endl;
-
-    huffmanDecodeTextFile(encodeOutputPath, decodeOutputPath, codes, dummyBits);
-    if(filesEqual(inputFilePath, decodeOutputPath))
-        cout << "File successfully decompressed." << endl;
-    else
-        cout << "File unsuccessfully decompressed" << endl;
 	return 0;
 }
 
-pair<map<char, string>, int> huffmanEncodeTextFile(string inputFileName, string outputFileName)
-{
-    ifstream input(inputFileName);
-    cout << "compressing using huffman encoding" << endl;
-    MinHeap minHeap(500);
-	
-	map<char, int> m;
-	string line;
-	while(getline(input, line))
-	{
-        line += '\n'; //reappend the '\n' that getline removed
-		for(auto& c : line)
-		{  
-			// If the character is not already in the map, add it with a frequency of 1.
-			if (m.find(c) == m.end())
-			{
-				m.insert({c, 1});
-			}
-			// If the character is already in the map, increment its frequency.
-			else
-			{
-				m[c]++;
-			}
-		}
-	}
-    input.close();
-	for(auto& pair : m)
-	{
-		minHeap.insert(pair.first, pair.second);
-	}
-    MinHeapNode* root = minHeap.buildHuffmanTree();
-	map<char, string> codes;
-	minHeap.traverseHuffmanTree(root, "", codes);
-    int dummyBits = replaceTextWithHuffmanCodes(inputFileName, outputFileName, codes);
-
-    return {codes, dummyBits};
+uint8_t Quantize(uint8_t value, uint8_t quantizationLevel) {
+    // Map 256 values into quantizationLevel bins.
+    return (value / quantizationLevel) * quantizationLevel;
 }
 
-void huffmanDecodeTextFile(string inputFileName, string outputFileName, map<char, string> huffmanCodes, int dummyBits)
-{
-    //reverse the keys and values for the huffmanCodes
-    map<string, char> reversedCodes;
-    for (auto& pair : huffmanCodes)
-    {
-        reversedCodes.insert({pair.second, pair.first});
-    }
-    ifstream input(inputFileName, ios::binary);
-    ofstream output(outputFileName, ios::binary);
-    cout << "decompressing huffman encoded file" << endl;
+vector<uint8_t> RLEDecode(const vector<uint8_t>& data) {
+    vector<uint8_t> decodedFrame;
 
-
-    // Read binary data and convert huffman codes to ascii value of char
-    string binaryString;
-    string test;
-    char byte;
-    int end = 0;
-    while (input.get(byte)) {
-        if (input.peek() == EOF) 
-        {
-            end = dummyBits;
-        } 
-        for (int bit = 7; bit >= end; --bit) {
-            binaryString += ((byte >> bit) & 1) ? '1' : '0';
-            if (reversedCodes.find(binaryString) != reversedCodes.end())
-            {   
-                if (binaryString == "0010")
-                {
-                    int test2 = 1;
-                }
-                output.write(&reversedCodes[binaryString], 1);
-                test += reversedCodes[binaryString];
-                binaryString = "";
-            }
-        }
+    for (auto it = data.begin(); it != data.end(); ++it) {
+        uint8_t pixel = *it;
+        uint8_t count = *++it;
+        decodedFrame.insert(decodedFrame.end(), count, pixel);
     }
-    input.close();
-    output.close();
+
+    return decodedFrame;
 }
-//returns how many extra bits at the end should be ignored
-int replaceTextWithHuffmanCodes(string inputFileName, string outputFileName, map<char, string> huffmanCodes) {
-    ifstream input(inputFileName);
-    ofstream output(outputFileName, ios::binary);
 
-    char bitBuffer = 0; // Buffer to accumulate bits
-    int bitCount = 0;   // Count of bits in the buffer
+vector<uint8_t> RLEEncode(const vector<uint8_t>& data, uint8_t quantizationLevel) {
+    if (data.empty()) {
+        return {};
+    }
 
-    char c;
-    string test;
-    while (input.get(c)) {
-        test += c;
-        // if (c == '\n') {
-        //     continue;
-        // }
-        const string& huffmanCode = huffmanCodes.at(c);
+    vector<uint8_t> result;
+    uint8_t count = 1;
+    uint8_t current = Quantize(data[0], quantizationLevel);
+    const uint8_t maxRunLength = numeric_limits<uint8_t>::max();
 
-        for (char codeBit : huffmanCode) {
-            bitBuffer <<= 1; // Shift the buffer to the left
-            bitBuffer |= (codeBit - '0'); // Set the least significant bit
-
-            ++bitCount;
-            if (bitCount == 8) {
-                output.write(&bitBuffer, 1);
-                bitBuffer = 0;
-                bitCount = 0;
+    for (size_t i = 1; i < data.size(); ++i) {
+        uint8_t quantized = Quantize(data[i], quantizationLevel);
+        if (quantized == current) {
+            if (count < maxRunLength) {  // Avoid overflow
+                ++count;
+            } else {
+                // Write out current run before it's lost.
+                result.push_back(current);
+                result.push_back(count);
+                count = 1;
             }
+        } else {
+            result.push_back(current);
+            result.push_back(count);
+            current = quantized;
+            count = 1;
         }
     }
 
-    if (bitCount > 0)
-    {
-        bitBuffer <<= (8 - bitCount);
-        output.write(&bitBuffer, 1);
+    // Write out the last run.
+    result.push_back(current);
+    result.push_back(count);
+
+    return result;
+}
+
+
+vector<vector<uint8_t>> readYUV420File(const string& filename, int width, int height) {
+    // Size of each frame for YUV420.
+    int frameSize = width * height * 1.5;
+
+    ifstream file(filename, ios::binary);
+    if (!file) {
+        cerr << "Failed to open file\n";
+        return {};
     }
 
-    input.close();
-    output.close();
-    return 8 - bitCount;
+    // Read frames one by one.
+    vector<vector<uint8_t>> frames;
+    while (!file.eof()) {
+        vector<uint8_t> frame(frameSize);
+        file.read(reinterpret_cast<char*>(frame.data()), frameSize);
+
+        // Check if a frame was read successfully.
+        if (file.gcount() != frameSize) {
+            break;
+        }
+
+        frames.push_back(move(frame));
+    }
+
+    file.close();
+
+    return frames;
+}
+
+pair <int, int> RLECompress(const std::vector<std::vector<uint8_t>>& frames, uint8_t quantizationLevel) {
+    std::cout << "Size of the input YUV file: " << (frames.size() * frames[0].size()) << " bytes\n";
+
+    std::ofstream outFile("../main-io/compressed_rle.rle", std::ios::binary);
+    if (!outFile) {
+        std::cerr << "Failed to open output file\n";
+        return make_pair(0,0);
+    }
+
+    // Encode frames
+    size_t totalSize = 0;
+    for (const auto& frame : frames) {
+        auto encoded = RLEEncode(frame, quantizationLevel);
+        uint32_t size = encoded.size();
+        totalSize += size;
+        outFile.write(reinterpret_cast<const char*>(&size), sizeof(size));
+        outFile.write(reinterpret_cast<const char*>(encoded.data()), encoded.size());
+    }
+    outFile.close();
+
+    std::cout << "Size of the compressed RLE file: " << totalSize << " bytes\n";
+
+    return make_pair((frames.size() * frames[0].size()), totalSize);
+}
+
+bool RLEDecompress() {
+    // Decode the compressed frames
+    std::ifstream inCompressedFile("../main-io/compressed_rle.rle", std::ios::binary);
+    std::ofstream outDecodedFile("../main-io/decoded.yuv", std::ios::binary);
+
+    uint32_t size;
+    while (inCompressedFile.read(reinterpret_cast<char *>(&size), sizeof(size))) {
+        std::vector<uint8_t> compressedFrame(size);
+        if (!inCompressedFile.read(reinterpret_cast<char *>(compressedFrame.data()), compressedFrame.size())) {
+            std::cerr << "Failed to read a frame\n";
+            return false;
+        }
+
+        auto decoded = RLEDecode(compressedFrame);
+        outDecodedFile.write(reinterpret_cast<const char *>(decoded.data()), decoded.size());
+    }
+
+    inCompressedFile.close();
+    outDecodedFile.close();
+
+    return true;
+}
+
+void PrintRLECompressionDifference (int start, int final) {
+    if (start > final) {
+        cout << "file size reduced by " << (start - final)*100 / start << "%" << endl;
+    } else {
+        cout << "file size increased by " << (final - start)*100 / start << "%" << endl;
+    }
 }
 
 bool filesEqual(string filePath1, string filePath2) {
@@ -195,6 +271,3 @@ bool filesEqual(string filePath1, string filePath2) {
 	file2.close();
     return true;
 }
-
-
-
